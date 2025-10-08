@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '8.3.0'
+    id 'xyz.jpenilla.run-paper' version '2.3.1'
+}
+
+group = 'org.cubexmc'
+version = '1.0.3'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri('https://repo.papermc.io/repository/maven-public/')
+        name = 'papermc-repo'
+    }
+    maven {
+        url = uri('https://maven.enginehub.org/repo/')
+        name = 'enginehub-repo'
+    }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT'
+    // WorldEdit API (Java 17 compatible)
+    compileOnly 'com.sk89q.worldedit:worldedit-core:7.2.17'
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.17'
+}
+runServer {
+    // Configure the Minecraft version for the testing server task
+    minecraftVersion '1.20'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+tasks.build {
+    dependsOn tasks.shadowJar
+}
+
+processResources {
+    def props = [version: project.version]
+    inputs.properties(props)
+    filteringCharset = 'UTF-8'
+    filesMatching('paper-plugin.yml') {
+        expand props
+    }
+}
